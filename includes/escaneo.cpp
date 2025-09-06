@@ -1,4 +1,4 @@
-#include "Escaneo.h"
+#include "escaneo.h"
 #include <iostream>
 #include <chrono>
 #include <map>
