@@ -226,16 +226,94 @@ EstadoPuerto Escaneo::verificarPuerto(const std::string& ip, int puerto, int& ti
 }
 
 
+/**
+ * Escanea un puerto individual llamando a verificarPuerto y obteniendo el servicio.
+ * @parametro: ip Dirección IP del host objetivo
+ * @parametro: puerto Número de puerto a escanear
+ * @return: Estructura Puerto con número, estado, servicio y tiempo de respuesta
+ */
 static Puerto escanearPuertoIndividual(const std::string& ip, int puerto) {
-    // aquí llama a la función verificarPuerto, luego obtenerServicio y
-    // al final construir el puerto, el struct va a estar en el .h
-    return Puerto(puerto, EstadoPuerto::FILTRADO, std::string(), -1);
+    int tiempoRespuesta = 0;
+    EstadoPuerto estado = Escaneo::verificarPuerto(ip, puerto, tiempoRespuesta);
+    std::string servicio = Escaneo::obtenerServicio(puerto);
+    return Puerto(puerto, estado, servicio, tiempoRespuesta);
 }
 
+/**
+ * Escanea múltiples puertos de un host usando hilos.
+ * Determina la cantidad óptima de hilos según la plataforma y cantidad de puertos.
+ * Muestra progreso en consola y ordena resultados por número de puerto.
+ * @parametro: ip Dirección IP del host objetivo
+ * @parametro: puertos Vector de puertos a escanear
+ * @parametro: requestedThreads Número de hilos deseados (opcional)
+ * @return: Vector de estructuras Puerto con resultados del escaneo
+ */
 std::vector<Puerto> Escaneo::escanearPuertos(const std::string& ip, const std::vector<int>& puertos, size_t requestedThreads /* = 0 */) {
-    // Esto idealmente va a ser en paralelo, va a tener una función -t el script para definir hilos
-    // para linux en tests me va bien los 40 hilos completos pero en windows no, así que en linux usamos
-    // std::thread::hardware_concurrency, en windows que se usen 4 o así por default
-    // esto creo que va a tener varias formas de return así que no sé cómo documentar más
-    return std::vector<Puerto>{};
+    std::vector<Puerto> resultados;
+
+    try {
+        inicializarWinsock();
+
+        // Determinar número de hilos a usar
+        size_t numThreads = 0;
+        if (requestedThreads > 0) {
+            numThreads = std::min(requestedThreads, puertos.size());
+        } else {
+#ifdef _WIN32
+            numThreads = std::min<size_t>(5, puertos.size());
+#else
+            size_t hw = std::thread::hardware_concurrency();
+            if (hw == 0) hw = 2;
+            size_t maxThreads = hw * 2;
+            numThreads = std::min(maxThreads, puertos.size());
+#endif
+        }
+
+        if (numThreads == 0) numThreads = 1;
+
+        size_t batchSize = (puertos.size() + numThreads - 1) / numThreads; // ceil
+
+        std::cout << "Usando " << numThreads << " hilos para escanear " << puertos.size() << " puertos..." << std::endl;
+
+        std::vector<std::future<std::vector<Puerto>>> futures;
+        futures.reserve(numThreads);
+
+        for (size_t i = 0; i < puertos.size(); i += batchSize) {
+            size_t end = std::min(i + batchSize, puertos.size());
+            std::vector<int> lote(puertos.begin() + i, puertos.begin() + end);
+
+            futures.push_back(std::async(std::launch::async, [ip, lote]() -> std::vector<Puerto> {
+                std::vector<Puerto> resultadosLote;
+                resultadosLote.reserve(lote.size());
+                for (int puerto : lote) {
+                    resultadosLote.push_back(escanearPuertoIndividual(ip, puerto));
+                }
+                return resultadosLote;
+            }));
+        }
+
+        size_t completados = 0;
+        for (auto& fut : futures) {
+            std::vector<Puerto> loteResultados = fut.get();
+            resultados.insert(resultados.end(), loteResultados.begin(), loteResultados.end());
+            completados += loteResultados.size();
+            std::cout << "\rProgreso: " << completados << "/" << puertos.size()
+                      << " (" << (100 * completados / puertos.size()) << "%)" << std::flush;
+        }
+        std::cout << "\rEscaneo completado: " << resultados.size() << " puertos.          " << std::endl;
+
+        // Ordenar resultados por número de puerto
+        std::sort(resultados.begin(), resultados.end(), [](const Puerto& a, const Puerto& b) {
+            return a.numero < b.numero;
+        });
+
+        limpiarWinsock();
+
+    } catch (...) {
+        limpiarWinsock();
+        throw;
+    }
+
+    return resultados;
 }
+
