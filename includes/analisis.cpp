@@ -218,26 +218,60 @@ bool Analisis::tienePatronSospechoso(const std::vector<Puerto>& puertos) {
     return false;
 }
 
-
-
 std::vector<Puerto> Analisis::identificarSospechosos(const std::vector<Puerto>& puertos, int nivelSensibilidad) {
-    // Esto va a regresar todos los puertos raros y su motivo
-    //
-    // 1. Primero definir un "umbral" de riesgo según la sensibilidad, es decir, si por ejemplo
-    // -s1 osea, sensibilidad 1, se va a necesitar un puntaje más alto para aparecer como riesgoso, pero si s3
-    // entonces va a ser más sensible y requiere de un puntaje menor para aparecer.
-    // 
-    //  - Nivel 1: alto (ej: >=40)
-    //  - Nivel 2: medio (ej: >=25)
-    //  - Nivel 3: bajo (ej: >=15)
-    // 
-    // 2. Para cada puerto que esté abierto:
-    //    - Calcular sus puntos de riesgo
-    //    - Si entra en el umbral se mete en la lista de sospechosos
-    //    - Guardar el por qué se sospecha
-    // 
-    // 3. Usar la funcion de secuenciasSospechosas
-    // 4. Ordenar la lista final
-    // 5. Regresar la lista
-    return {};
+    std::vector<Puerto> sospechosos;
+    
+    // Umbrales según nivel de sensibilidad
+    int umbralRiesgo;
+    switch (nivelSensibilidad) {
+        case 1: umbralRiesgo = 40; break; // Bajo: solo muy sospechosos
+        case 2: umbralRiesgo = 25; break; // Medio: moderadamente sospechosos
+        case 3: umbralRiesgo = 15; break; // Alto: cualquier cosa potencialmente sospechosa
+        default: umbralRiesgo = 25; break;
+    }
+    
+    // Evaluar cada puerto abierto
+    for (auto puerto : puertos) {
+        if (puerto.estado == EstadoPuerto::ABIERTO) {
+            int puntuacion = calcularPuntuacionRiesgo(puerto);
+            
+            if (puntuacion >= umbralRiesgo) {
+                puerto.razonSospecha = obtenerRazonSospecha(puerto, nivelSensibilidad);
+                sospechosos.push_back(puerto);
+            }
+        }
+    }
+    
+    // Detectar patrones adicionales
+    std::vector<int> secuenciasSospechosas = detectarSecuenciasSospechosas(puertos);
+    
+    // Agregar puertos de secuencias sospechosas que no estén ya incluidos
+    for (int numeroSecuencia : secuenciasSospechosas) {
+        bool yaIncluido = false;
+        for (const auto& sospechoso : sospechosos) {
+            if (sospechoso.numero == numeroSecuencia) {
+                yaIncluido = true;
+                break;
+            }
+        }
+        
+        if (!yaIncluido) {
+            // Buscar el puerto original
+            for (auto puerto : puertos) {
+                if (puerto.numero == numeroSecuencia && puerto.estado == EstadoPuerto::ABIERTO) {
+                    puerto.razonSospecha = "Parte de secuencia consecutiva sospechosa de puertos abiertos";
+                    sospechosos.push_back(puerto);
+                    break;
+                }
+            }
+        }
+    }
+    
+    // Ordenar por número de puerto
+    std::sort(sospechosos.begin(), sospechosos.end(), 
+              [](const Puerto& a, const Puerto& b) {
+                  return a.numero < b.numero;
+              });
+    
+    return sospechosos;
 }
