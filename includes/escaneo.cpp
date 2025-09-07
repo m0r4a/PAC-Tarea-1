@@ -123,27 +123,108 @@ bool Escaneo::esIPLocal(const std::string& ip) {
 }
 
 
-
-
+/**
+ * Obtiene el nombre del servicio asociado a un puerto.
+ * Si el puerto no está en la lista común, se clasifica según su rango:
+ * - <1024: Sistema/Privilegiado
+ * - 1024-49151: Registrado
+ * - >=49152: Dinámico/Privado
+ * @param puerto Número de puerto
+ * @return Nombre del servicio como string
+ */
 std::string Escaneo::obtenerServicio(int puerto) {
-    // Ver si el puerto está en servicios comúnes, en pseudocódigo que sea algo así
-    // var = servicioComún.find(puerto)
-    // si no está en los servicios comunes entoces
-    // si puerto < 1024 entonces es como de sistema o privilegiado
-    // si < 49152 otro tipo especial, pero no sé cómo ponerle
-    // de otra forma, entonces Dinámico o Privado
-    return std::string();
+    auto it = serviciosComunes.find(puerto);
+    if (it != serviciosComunes.end()) return it->second;
+    if (puerto < 1024) return "Sistema/Privilegiado";
+    if (puerto < 49152) return "Registrado";
+    return "Dinámico/Privado";
 }
 
+/**
+ * Verifica si un puerto está abierto, cerrado o filtrado.
+ * Se mide el tiempo de respuesta en milisegundos.
+ * Utiliza sockets TCP y modo no bloqueante con timeout.
+ * @param ip Dirección IP del host objetivo
+ * @param puerto Número de puerto a verificar
+ * @param tiempoRespuesta Variable donde se guardará el tiempo de respuesta (ms)
+ * @return EstadoPuerto (ABIERTO, CERRADO o FILTRADO)
+ */
 EstadoPuerto Escaneo::verificarPuerto(const std::string& ip, int puerto, int& tiempoRespuesta) {
-    // -> Cerrar socket en todos los caminos y manejar errores/errno/WSA
-    //  Esta va a ser una función muy importante, se va a usar mucho el ifdef _WIN32, para usar ioctlsocket
-    //    si estás en windows o fcntl en linux
-    //  Se intenta medir el tiempo de respuesta, quizá la respuesta? esto te SYN, ACK, SYN/ACK
-    //    no sé, pero esto tiene que devolver EstadoPuerto::ABIERTO o ::CERRADO o ::FILTRADO
-    tiempoRespuesta = -1;
-    return EstadoPuerto::FILTRADO;
+    auto inicio = std::chrono::high_resolution_clock::now();
+
+    socket_t sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == INVALID_SOCKET) {
+        tiempoRespuesta = -1;
+        return EstadoPuerto::FILTRADO;
+    }
+
+#ifdef _WIN32
+    u_long mode = 1;
+    ioctlsocket(sock, FIONBIO, &mode);
+#else
+    int flags = fcntl(sock, F_GETFL, 0);
+    fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+#endif
+
+    struct sockaddr_in direccion;
+    direccion.sin_family = AF_INET;
+    direccion.sin_port = htons(puerto);
+    direccion.sin_addr.s_addr = INADDR_NONE;
+
+    int resultado = inet_pton(AF_INET, ip.c_str(), &direccion.sin_addr);
+    if (resultado <= 0) {
+        CLOSESOCKET(sock);
+        tiempoRespuesta = -1;
+        return EstadoPuerto::FILTRADO;
+    }
+
+    int conectar = connect(sock, (struct sockaddr*)&direccion, sizeof(direccion));
+    if (conectar == 0) {
+        auto fin = std::chrono::high_resolution_clock::now();
+        tiempoRespuesta = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio).count());
+        CLOSESOCKET(sock);
+        return EstadoPuerto::ABIERTO;
+    }
+
+#ifdef _WIN32
+    if (WSAGetLastError() != WSAEWOULDBLOCK) {
+#else
+    if (errno != EINPROGRESS) {
+#endif
+        auto fin = std::chrono::high_resolution_clock::now();
+        tiempoRespuesta = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio).count());
+        CLOSESOCKET(sock);
+        return EstadoPuerto::CERRADO;
+    }
+
+    fd_set fdset;
+    struct timeval timeout;
+    FD_ZERO(&fdset);
+    FD_SET(sock, &fdset);
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500000; // 500ms
+
+    int selectResult = select(static_cast<int>(sock + 1), NULL, &fdset, NULL, &timeout);
+
+    auto fin = std::chrono::high_resolution_clock::now();
+    tiempoRespuesta = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio).count());
+
+    if (selectResult == 1) {
+        int error = 0;
+        socklen_t len = sizeof(error);
+        getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
+        CLOSESOCKET(sock);
+        if (error == 0) return EstadoPuerto::ABIERTO;
+        return EstadoPuerto::CERRADO;
+    } else if (selectResult == 0) {
+        CLOSESOCKET(sock);
+        return EstadoPuerto::FILTRADO;
+    } else {
+        CLOSESOCKET(sock);
+        return EstadoPuerto::FILTRADO;
+    }
 }
+
 
 static Puerto escanearPuertoIndividual(const std::string& ip, int puerto) {
     // aquí llama a la función verificarPuerto, luego obtenerServicio y
