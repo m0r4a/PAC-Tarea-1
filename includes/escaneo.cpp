@@ -45,22 +45,46 @@ static std::map<int, std::string> serviciosComunes = {
 };
 
 #ifdef _WIN32
+/**
+ * Implementacion a windows
+ * Inicializa Winsock en Windows.
+ * Debe llamarse antes de usar cualquier función de sockets.
+ * Lanza una excepción si la inicialización falla.
+ */
 void Escaneo::inicializarWinsock() {
-    // Aquí hay que usar WASTartup para cuando sea windows
+    WSADATA wsaData;
+    int resultado = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (resultado != 0) {
+        throw std::runtime_error("Error al inicializar Winsock: " + std::to_string(resultado));
+    }
 }
 
+/**
+ * Limpia Winsock en Windows.
+ * Debe llamarse al final del uso de sockets para liberar recursos.
+ */
 void Escaneo::limpiarWinsock() {
-    // Y aquí se usa WSACleanup
+    WSACleanup();
 }
 #else
+
+/**
+ * En Linux/Unix no se requiere inicialización de sockets,
+ * pero se mantienen las funciones para compatibilidad cross-platform.
+ */
 void Escaneo::inicializarWinsock() {
-    // Esto no se necesita para linux así que esto vacío
+    // No es necesario en Linux/Unix
 }
 
+/**
+ * En Linux/Unix no se requiere limpieza de sockets,
+ * pero se mantiene para compatibilidad cross-platform.
+ */
 void Escaneo::limpiarWinsock() {
-    // Lo mismo
+    // No es necesario en Linux/Unix
 }
 #endif
+
 
 bool Escaneo::validarIP(const std::string& ip) {
     // Esto es medio opcional pero estaría bien poner una regex para verificar
