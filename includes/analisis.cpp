@@ -1,9 +1,12 @@
 #include "analisis.h"
 #include <algorithm>
 
-// Esta va a ser la lista de puertos que vamos a considerar como sospechosos
 const std::set<int> Analisis::PUERTOS_MALICIOSOS = {
-    // Ejemplo: 12345, 31337, etc.
+    // Trojans conocidos
+    1243, 1999, 2001, 2115, 2140, 3129, 3150, 4590, 5000, 5001, 5011,
+    6400, 6670, 6711, 6712, 6713, 6776, 7000, 7300, 7301, 7306, 7307,
+    7308, 9872, 9873, 9874, 9875, 10067, 10167, 12223, 12345, 12346,
+    16969, 20034, 21544, 30100, 31337, 31338, 54321
 };
 
 const std::set<int> Analisis::PUERTOS_ADMINISTRATIVOS = {
