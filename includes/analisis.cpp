@@ -10,7 +10,9 @@ const std::set<int> Analisis::PUERTOS_MALICIOSOS = {
 };
 
 const std::set<int> Analisis::PUERTOS_ADMINISTRATIVOS = {
-    // Ejemplo: 22 (SSH), 3389 (RDP), 3306 (MySQL)
+    // Servicios administrativos sensibles
+    22, 23, 135, 139, 445, 1433, 1521, 3306, 3389, 5432, 5900, 5901,
+    5902, 5903, 5904, 5905, 6000, 6001, 6002, 8080, 8443, 9200
 };
 
 const std::set<int> Analisis::PUERTOS_TROJANS = {
