@@ -159,13 +159,37 @@ std::string Analisis::obtenerRazonSospecha(const Puerto& puerto, int nivelSensib
 
 
 std::vector<int> Analisis::detectarSecuenciasSospechosas(const std::vector<Puerto>& puertos) {
-    // Esto va a a ver si varios puertos están consecutivamente abiertos
-    //
-    // 1. Agarrar todos los puertos que estén abiertos
-    // 2. Se ordenan
-    // 3. Ver si están en secuencia por al menos 5 puertos seguidos
-    // 4. Regresar una lista con los números consecutivos de puerto
-    return {};
+    std::vector<int> sospechosos;
+    std::vector<int> abiertos;
+    
+    // Obtener puertos abiertos ordenados
+    for (const auto& puerto : puertos) {
+        if (puerto.estado == EstadoPuerto::ABIERTO) {
+            abiertos.push_back(puerto.numero);
+        }
+    }
+    
+    std::sort(abiertos.begin(), abiertos.end());
+    
+    // Detectar secuencias consecutivas largas (posible escaneo o configuración automática)
+    if (abiertos.size() >= 5) {
+        for (size_t i = 0; i < abiertos.size() - 4; i++) {
+            bool consecutivo = true;
+            for (int j = 1; j < 5; j++) {
+                if (abiertos[i + j] - abiertos[i + j - 1] != 1) {
+                    consecutivo = false;
+                    break;
+                }
+            }
+            if (consecutivo) {
+                for (int j = 0; j < 5; j++) {
+                    sospechosos.push_back(abiertos[i + j]);
+                }
+            }
+        }
+    }
+    
+    return sospechosos;
 }
 
 bool Analisis::tienePatronSospechoso(const std::vector<Puerto>& puertos) {
