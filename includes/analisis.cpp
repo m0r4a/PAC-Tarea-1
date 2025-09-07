@@ -30,6 +30,9 @@ const std::set<int> Analisis::PUERTOS_TROJANS = {
 };
 
 const std::set<int> Analisis::PUERTOS_BACKDOORS = {
+    // Backdoors comunes
+    1524, 1999, 2001, 4444, 6667, 6668, 6669, 7000, 8080, 8888,
+    9999, 10000, 31337, 31338, 54321
 };
 
 const std::set<int> Analisis::PUERTOS_P2P = {
