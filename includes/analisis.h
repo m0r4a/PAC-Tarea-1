@@ -1,8 +1,7 @@
 #ifndef ANALISIS_H
 #define ANALISIS_H
 
-// #include "Escaneo.h" esto se va a necesitar para luego,
-// la idea es definir el struct del Puerto en el escaneo
+#include "Escaneo.h"
 #include <vector>
 #include <set>
 
