@@ -82,21 +82,28 @@ bool Analisis::esPuertoInusual(int puerto) {
 
 
 int Analisis::calcularPuntuacionRiesgo(const Puerto& puerto) {
-    // Esto va a asignar un puntaje de "riesgo" basado en ciertas características medio arbitrarias
-    //
-    // Va a ser algo así:
-    // 1. Ver si el puerto está abierto, si no, su puntaje es 0
-    // 2. Sumar puntos según el tipo:
-    //    +50 si es malicioso
-    //    +40 si es Trojan
-    //    +35 si es Backdoor
-    //    +25 si es P2P
-    //    +20 si es administrativo
-    //    +15 si es inusual
-    //    +15 si es de desarrollo en un entorno productivo 
-    // 3. Podría ser que agreguemos puntos si la respuesta es muy rápida (podría ser una config especial)
-    // 4. Return el total
-    return 0;
+    int puntuacion = 0;
+    
+    if (puerto.estado == EstadoPuerto::ABIERTO) {
+        puntuacion += 10;
+        
+        if (esPuertoConocidoMalicioso(puerto.numero)) puntuacion += 50;
+        if (esPuertoTrojan(puerto.numero)) puntuacion += 40;
+        if (esPuertoBackdoor(puerto.numero)) puntuacion += 35;
+        if (esPuertoP2P(puerto.numero)) puntuacion += 25;
+        if (esPuertoAdministrativo(puerto.numero)) puntuacion += 20;
+        if (esPuertoInusual(puerto.numero)) puntuacion += 15;
+        
+        // Puertos de desarrollo en sistemas que no deberían tenerlos
+        if (PUERTOS_DESARROLLO.find(puerto.numero) != PUERTOS_DESARROLLO.end()) {
+            puntuacion += 15;
+        }
+        
+        // Tiempo de respuesta muy rápido puede indicar servicio configurado
+        if (puerto.tiempoRespuesta < 10) puntuacion += 5;
+    }
+    
+    return puntuacion;
 }
 
 std::string Analisis::obtenerRazonSospecha(const Puerto& puerto, int nivelSensibilidad) {
