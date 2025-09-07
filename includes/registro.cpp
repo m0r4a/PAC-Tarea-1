@@ -1,4 +1,4 @@
-#include "Registro.h"
+#include "registro.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
