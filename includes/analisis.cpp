@@ -36,6 +36,10 @@ const std::set<int> Analisis::PUERTOS_BACKDOORS = {
 };
 
 const std::set<int> Analisis::PUERTOS_P2P = {
+    // Aplicaciones P2P
+    411, 412, 1214, 4661, 4662, 4665, 4672, 6346, 6347, 6881, 6882,
+    6883, 6884, 6885, 6886, 6887, 6888, 6889, 6890, 6891, 6892,
+    6893, 6894, 6895, 6896, 6897, 6898, 6899, 6969
 };
 
 const std::set<int> Analisis::PUERTOS_DESARROLLO = {
