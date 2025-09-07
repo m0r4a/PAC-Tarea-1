@@ -43,6 +43,8 @@ const std::set<int> Analisis::PUERTOS_P2P = {
 };
 
 const std::set<int> Analisis::PUERTOS_DESARROLLO = {
+    // Puertos comunes de desarrollo que podrían ser sospechosos en producción
+    3000, 4000, 5000, 8000, 8080, 8081, 8888, 9000, 9090
 };
 
 
