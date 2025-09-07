@@ -107,14 +107,54 @@ int Analisis::calcularPuntuacionRiesgo(const Puerto& puerto) {
 }
 
 std::string Analisis::obtenerRazonSospecha(const Puerto& puerto, int nivelSensibilidad) {
-    // Esta función va a devolver un texto con los motivos por los cuales es sospechoso
-    //
-    // 1. Se crea una lista de "razones" (como que está asociado a un puerto con malware o así)
-    // 2. Revisar si el puerto está en x o y lista y agregar la razón
-    // 3. Si el nivel de senssibilidad es alto (creo que 3 va a ser el máximo), agregas más razones
-    // 4. So no hay razones -> devuelves un texto de que no tienen clasificación especifica de riesgo
-    // 5. unir todo en un string y devolverlo
-    return "";
+    std::vector<std::string> razones;
+    
+    if (esPuertoConocidoMalicioso(puerto.numero)) {
+        razones.push_back("Puerto asociado con malware conocido");
+    }
+    
+    if (esPuertoTrojan(puerto.numero)) {
+        razones.push_back("Comúnmente usado por trojans");
+    }
+    
+    if (esPuertoBackdoor(puerto.numero)) {
+        razones.push_back("Puerto típico de backdoors");
+    }
+    
+    if (esPuertoP2P(puerto.numero)) {
+        razones.push_back("Puerto P2P que puede violar políticas");
+    }
+    
+    if (esPuertoAdministrativo(puerto.numero)) {
+        razones.push_back("Servicio administrativo sensible expuesto");
+    }
+    
+    if (esPuertoInusual(puerto.numero)) {
+        razones.push_back("Puerto en rango inusual o sospechoso");
+    }
+    
+    if (PUERTOS_DESARROLLO.find(puerto.numero) != PUERTOS_DESARROLLO.end()) {
+        razones.push_back("Puerto de desarrollo en sistema de producción");
+    }
+    
+    // Para nivel alto, agregar más criterios
+    if (nivelSensibilidad >= 3) {
+        if (puerto.numero > 10000 && puerto.numero < 65535) {
+            razones.push_back("Puerto en rango alto poco común para servicios estándar");
+        }
+    }
+    
+    if (razones.empty()) {
+        return "Puerto abierto sin clasificación específica de riesgo";
+    }
+    
+    std::string resultado;
+    for (size_t i = 0; i < razones.size(); i++) {
+        if (i > 0) resultado += "; ";
+        resultado += razones[i];
+    }
+    
+    return resultado;
 }
 
 
