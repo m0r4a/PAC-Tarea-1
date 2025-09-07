@@ -48,35 +48,36 @@ const std::set<int> Analisis::PUERTOS_DESARROLLO = {
 };
 
 
+const std::set<int> Analisis::PUERTOS_DESARROLLO = {
+    // Puertos comunes de desarrollo que podrían ser sospechosos en producción
+    3000, 4000, 5000, 8000, 8080, 8081, 8888, 9000, 9090
+};
+
 bool Analisis::esPuertoConocidoMalicioso(int puerto) {
-    // Esto tiene que ver si el puerto está en malicioso
-    // algo como PUERTO_malicioso.find(puerto)
-    return false;
+    return PUERTOS_MALICIOSOS.find(puerto) != PUERTOS_MALICIOSOS.end();
 }
 
 bool Analisis::esPuertoAdministrativo(int puerto) {
-    // las estructuras son iguales, CONST.find(puerto) y si != CONST.end()
-    return false;
+    return PUERTOS_ADMINISTRATIVOS.find(puerto) != PUERTOS_ADMINISTRATIVOS.end();
 }
 
 bool Analisis::esPuertoTrojan(int puerto) {
-    return false;
+    return PUERTOS_TROJANS.find(puerto) != PUERTOS_TROJANS.end();
 }
 
 bool Analisis::esPuertoBackdoor(int puerto) {
-    return false;
+    return PUERTOS_BACKDOORS.find(puerto) != PUERTOS_BACKDOORS.end();
 }
 
 bool Analisis::esPuertoP2P(int puerto) {
-    return false;
+    return PUERTOS_P2P.find(puerto) != PUERTOS_P2P.end();
 }
 
 bool Analisis::esPuertoInusual(int puerto) {
-    // Esto va a ser algo especial, vamos a revisar si el puerto es "raro"
-    // puerto > 49152
-    // puerto > 1024 y puert < 5000 y es mod 1000 == 0, es decir, algo como 2000, 3000
-    // entre 31000 y 33000 se supone que se suele usar para malware
-    return false;
+    // Puertos en rangos inusuales o específicos
+    return (puerto > 49152) || // Puertos dinámicos/privados
+           (puerto >= 1024 && puerto <= 5000 && puerto % 1000 == 0) || // Puertos "redondos"
+           (puerto >= 31000 && puerto <= 33000); // Rango comúnmente usado por malware
 }
 
 
