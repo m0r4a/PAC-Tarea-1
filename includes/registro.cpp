@@ -1,39 +1,62 @@
-// NOTA: ESTO NO ESTÁ LISTO, NO TRABAJAR CON EL
-
 #include "registro.h"
+#include <fstream>
+#include <string>
+#include <vector>
 
 const std::string Registro::SEPARADOR = "================================================";
 
-// función que tenga la fecha
+std::string Registro::obtenerFechaHora() {
+    // que regrese la fecha en Y-m-d H:M:S
+    return std::string();
+}
 
-// una función que formatee el estado del puerto
+std::string Registro::formatearEstado(EstadoPuerto estado) {
+    // un switch case que regrese el valor del estado del puerto
+    // dependiendo de si esta EstadoPuerto::Abierto return "ABIERTO" o cerrado y así
+    return std::string();
+}
 
-// función que valide el nombre del archivo
-// parametro -o para poner outputs custom
+bool Registro::validarNombreArchivo(const std::string& nombreArchivo) {
+    // ps eso, verificar si no tiene caracteres vacíos o inválidos
+    return false;
+}
 
-// función para manejar los errores al manejar archivos
-// log o std::cerr
+void Registro::manejarErrorArchivo(const std::string& nombreArchivo, const std::string& operacion) {
+    // algo como std::cerr << el error y << std:endl
+}
 
-// función que escriba el o los encabezados del reporte
-// fecha, ip objetivo, título
+void Registro::escribirEncabezado(std::ofstream& archivo, const std::string& ip) {
+    // aquí sean creativos o algo, solo redirigan los strings a el archivo
+    // archivo << "string"
+}
 
-// escribir una lista con los puertos abiertos, una tabla con
-// puerto, estado, tiempo, servicio
+void Registro::escribirResultadosCompletos(std::ofstream& archivo, const std::vector<Puerto>& resultados) {
+    // solo imprimir los puertos ABIERTOS y redigirlo al archivo
+}
 
-// escribir la lista de puertos sospechosos con sus motivos y criterios
-// lo de anlisis.cpp, algo así como puerto.tiempoRespuesta
+void Registro::escribirPuertosSospechosos(std::ofstream& archivo, const std::vector<Puerto>& sospechosos) {
+    // Esto va a ser la sección de puertos sospechosos, aquí usen puerto.servicio, puerto.estado, puerto.tiempoRespuesta
+    // etc para vaciar la info
+}
 
-// no sé si vaya a ser necesario pero escribir estadísticas del escaneo
-// puertos totales, porcentajes, tiempo promedio y así
+void Registro::escribirEstadisticas(std::ofstream& archivo, const std::vector<Puerto>& resultados) {
+    // Aqui pongan stats de los puertos en general, totales, porcentaje de puertos abiertos y así
+}
 
-// escribir las recomendaciones basadas en tipos de puerto sospechoso, esto puede
-// cambiar mucho, pero el core es usar var = puerto.razonSospecha.find("malware"), luego
-// en base a si var entonces emitir recomendaciones
+void Registro::escribirRecomendaciones(std::ofstream& archivo, const std::vector<Puerto>& sospechosos) {
+    // Esto está medio a discusión, no recuerdo si es un requisito pero pueden buscar así:
+    // if sospechosos.empty() y dar recomendaciones generales, y así, utilizar los outputs de puerto.razonSospecha.find("malware")
+    // para categorizar si hay maliciosos o si hay p2p y tal.
+}
 
-
-// Y ya guardar el reporte
-// validar el nombre
-// abrirlo
-// escribir el encabezado, resultados, bla bla, recomendaciones
-// pasar las funciones por la funcion de manejo de errores
-// cerrar el archivo y retornar true si todo bn
+bool Registro::guardarResultados(const std::string& nombreArchivo,
+                                 const std::string& ip,
+                                 const std::vector<Puerto>& resultados,
+                                 const std::vector<Puerto>& sospechosos) {
+    // Esto ya es usar todas las funciones juntas, en este orden:
+    // validarNombreArchivo
+    // manejarErrorArchivo
+    // escribirEncabezado, resultadosCompletos bbla bla bla, hasta "escribirRecomendaciones"
+    // Se puede agregar un pie del reporte
+    return false;
+}
