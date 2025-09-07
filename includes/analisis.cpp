@@ -54,11 +54,6 @@ const std::set<int> Analisis::PUERTOS_DESARROLLO = {
 };
 
 
-const std::set<int> Analisis::PUERTOS_DESARROLLO = {
-    // Puertos comunes de desarrollo que podrían ser sospechosos en producción
-    3000, 4000, 5000, 8000, 8080, 8081, 8888, 9000, 9090
-};
-
 // =============================================================
 // Funciones de verificación básica de puertos
 // Determinan si un número de puerto pertenece a alguna de las

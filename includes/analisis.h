@@ -1,7 +1,7 @@
 #ifndef ANALISIS_H
 #define ANALISIS_H
 
-#include "Escaneo.h"
+#include "escaneo.h"
 #include <vector>
 #include <set>
 
