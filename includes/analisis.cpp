@@ -193,15 +193,31 @@ std::vector<int> Analisis::detectarSecuenciasSospechosas(const std::vector<Puert
 }
 
 bool Analisis::tienePatronSospechoso(const std::vector<Puerto>& puertos) {
-    // Ver patrones generales en el host
-    // 1. Contar cuantos puertos hay abiertos (rima btw)
-    // 2. Verificar si:
-    //   2.1. Más de 3 puertos administrativos abiertos
-    //   2.2. Al menos 1 puerto malicioso abierto
-    //   2.3. Muchos puertos abiertos (como 20 o así)
-    // 3. regresar true si cumple alguna condición, false si no
+    int puertosAbiertos = 0;
+    int puertosAdministrativos = 0;
+    int puertosMaliciosos = 0;
+    
+    for (const auto& puerto : puertos) {
+        if (puerto.estado == EstadoPuerto::ABIERTO) {
+            puertosAbiertos++;
+            if (esPuertoAdministrativo(puerto.numero)) puertosAdministrativos++;
+            if (esPuertoConocidoMalicioso(puerto.numero)) puertosMaliciosos++;
+        }
+    }
+    
+    // Patrones sospechosos:
+    // 1. Demasiados puertos administrativos abiertos
+    if (puertosAdministrativos > 3) return true;
+    
+    // 2. Cualquier puerto malicioso conocido
+    if (puertosMaliciosos > 0) return true;
+    
+    // 3. Demasiados puertos abiertos en general (posible honeypot o sistema comprometido)
+    if (puertosAbiertos > 20) return true;
+    
     return false;
 }
+
 
 
 std::vector<Puerto> Analisis::identificarSospechosos(const std::vector<Puerto>& puertos, int nivelSensibilidad) {
