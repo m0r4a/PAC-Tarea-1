@@ -1,6 +1,12 @@
 #include "analisis.h"
 #include <algorithm>
 
+// =============================================================
+// Definición de los conjuntos de puertos sospechosos
+// Estos sets almacenan listas estáticas de puertos asociados
+// con diferentes tipos de riesgos (malware, backdoors, P2P, etc.)
+// =============================================================
+
 const std::set<int> Analisis::PUERTOS_MALICIOSOS = {
     // Trojans conocidos
     1243, 1999, 2001, 2115, 2140, 3129, 3150, 4590, 5000, 5001, 5011,
@@ -53,6 +59,12 @@ const std::set<int> Analisis::PUERTOS_DESARROLLO = {
     3000, 4000, 5000, 8000, 8080, 8081, 8888, 9000, 9090
 };
 
+// =============================================================
+// Funciones de verificación básica de puertos
+// Determinan si un número de puerto pertenece a alguna de las
+// categorías definidas anteriormente (malicioso, trojan, etc.)
+// =============================================================
+
 bool Analisis::esPuertoConocidoMalicioso(int puerto) {
     return PUERTOS_MALICIOSOS.find(puerto) != PUERTOS_MALICIOSOS.end();
 }
@@ -73,6 +85,12 @@ bool Analisis::esPuertoP2P(int puerto) {
     return PUERTOS_P2P.find(puerto) != PUERTOS_P2P.end();
 }
 
+// =============================================================
+// Funciones de verificación básica de puertos
+// Determinan si un número de puerto pertenece a alguna de las
+// categorías definidas anteriormente (malicioso, trojan, etc.)
+// =============================================================
+
 bool Analisis::esPuertoInusual(int puerto) {
     // Puertos en rangos inusuales o específicos
     return (puerto > 49152) || // Puertos dinámicos/privados
@@ -80,6 +98,14 @@ bool Analisis::esPuertoInusual(int puerto) {
            (puerto >= 31000 && puerto <= 33000); // Rango comúnmente usado por malware
 }
 
+// =============================================================
+// Calcular puntuación de riesgo de un puerto
+// Suma puntos según características del puerto, como:
+// - Si es malicioso, trojan, backdoor, P2P, administrativo o inusual
+// - Si pertenece a puertos de desarrollo
+// - Si responde muy rápido (posible servicio configurado)
+// Devuelve un número que representa el nivel de riesgo
+// =============================================================
 
 int Analisis::calcularPuntuacionRiesgo(const Puerto& puerto) {
     int puntuacion = 0;
@@ -105,6 +131,12 @@ int Analisis::calcularPuntuacionRiesgo(const Puerto& puerto) {
     
     return puntuacion;
 }
+
+// =============================================================
+// Obtener la razón de sospecha de un puerto
+// Devuelve un string con las causas por las cuales un puerto fue
+// marcado como sospechoso (ej: malware, trojan, rango inusual, etc.)
+// =============================================================
 
 std::string Analisis::obtenerRazonSospecha(const Puerto& puerto, int nivelSensibilidad) {
     std::vector<std::string> razones;
@@ -157,6 +189,11 @@ std::string Analisis::obtenerRazonSospecha(const Puerto& puerto, int nivelSensib
     return resultado;
 }
 
+// =============================================================
+// Obtener la razón de sospecha de un puerto
+// Devuelve un string con las causas por las cuales un puerto fue
+// marcado como sospechoso (ej: malware, trojan, rango inusual, etc.)
+// =============================================================
 
 std::vector<int> Analisis::detectarSecuenciasSospechosas(const std::vector<Puerto>& puertos) {
     std::vector<int> sospechosos;
@@ -192,6 +229,14 @@ std::vector<int> Analisis::detectarSecuenciasSospechosas(const std::vector<Puert
     return sospechosos;
 }
 
+// =============================================================
+// Verificación de patrones sospechosos generales
+// Marca como sospechoso si:
+// - Hay demasiados puertos administrativos abiertos
+// - Hay al menos un puerto malicioso
+// - Hay más de 20 puertos abiertos en total
+// =============================================================
+
 bool Analisis::tienePatronSospechoso(const std::vector<Puerto>& puertos) {
     int puertosAbiertos = 0;
     int puertosAdministrativos = 0;
@@ -217,6 +262,14 @@ bool Analisis::tienePatronSospechoso(const std::vector<Puerto>& puertos) {
     
     return false;
 }
+
+// =============================================================
+// Función principal de análisis
+// - Aplica umbrales de riesgo según nivel de sensibilidad
+// - Marca como sospechosos puertos que superen el umbral
+// - Añade los que formen secuencias consecutivas sospechosas
+// - Ordena y devuelve la lista final de puertos sospechosos
+// =============================================================
 
 std::vector<Puerto> Analisis::identificarSospechosos(const std::vector<Puerto>& puertos, int nivelSensibilidad) {
     std::vector<Puerto> sospechosos;
