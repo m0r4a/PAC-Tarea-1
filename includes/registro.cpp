@@ -1,4 +1,4 @@
-#include "registro.h"
+#include "Registro.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -48,8 +48,8 @@ void Registro::manejarErrorArchivo(const std::string& nombreArchivo, const std::
 
 void Registro::escribirEncabezado(std::ofstream& archivo, const std::string& ip) {
     archivo << "================================================" << std::endl;
-    archivo << "           REPORTE DE ESCANEO DE PUERTOS     " << std::endl;
-    archivo << "                (GENERADO POR C++)  " << std::endl;
+    archivo << "           REPORTE DE ANÁLISIS DE SEGURIDAD     " << std::endl;
+    archivo << "         (GENERADO POR ESCÁNER DE PUERTOS C++)  " << std::endl;
     archivo << "================================================" << std::endl;
     archivo << std::endl;
 
@@ -73,7 +73,7 @@ void Registro::escribirResultadosCompletos(std::ofstream& archivo, const std::ve
     }
     
     if (puertosAbiertos.empty()) {
-        archivo << "  ✓ No se encontraron puertos abiertos. ¡Excelente!" << std::endl;
+        archivo << "  - No se encontraron puertos abiertos. ¡Excelente!" << std::endl;
         archivo << std::endl;
         return;
     }
@@ -100,13 +100,13 @@ void Registro::escribirPuertosSospechosos(std::ofstream& archivo, const std::vec
     archivo << std::endl;
     
     if (sospechosos.empty()) {
-        archivo << "✓ No se encontraron puertos sospechosos según los criterios definidos." << std::endl;
+        archivo << "- No se encontraron puertos sospechosos según los criterios definidos." << std::endl;
         archivo << "  Esto es un buen indicador de seguridad." << std::endl;
         archivo << std::endl;
         return;
     }
     
-    archivo << "⚠ ATENCIÓN: Se encontraron " << sospechosos.size() 
+    archivo << "!!! ATENCIÓN: Se encontraron " << sospechosos.size() 
             << " puerto(s) potencialmente sospechoso(s):" << std::endl << std::endl;
     
     for (const auto& puerto : sospechosos) {
@@ -178,10 +178,10 @@ void Registro::escribirRecomendaciones(std::ofstream& archivo, const std::vector
     
     if (sospechosos.empty()) {
         archivo << "RECOMENDACIONES GENERALES:" << std::endl;
-        archivo << "✓ Mantener un inventario actualizado de servicios autorizados" << std::endl;
-        archivo << "✓ Realizar escaneos periódicos para detectar cambios" << std::endl;
-        archivo << "✓ Implementar monitoreo continuo de puertos" << std::endl;
-        archivo << "✓ Mantener actualizados todos los servicios" << std::endl;
+        archivo << "- Mantener un inventario actualizado de servicios autorizados" << std::endl;
+        archivo << "- Realizar escaneos periódicos para detectar cambios" << std::endl;
+        archivo << "- Implementar monitoreo continuo de puertos" << std::endl;
+        archivo << "- Mantener actualizados todos los servicios" << std::endl;
         archivo << std::endl;
         return;
     }
@@ -204,38 +204,38 @@ void Registro::escribirRecomendaciones(std::ofstream& archivo, const std::vector
     }
     
     if (hayMaliciosos) {
-        archivo << "🚨 CRÍTICO - Puertos asociados con malware detectados:" << std::endl;
-        archivo << "   • Realizar análisis antimalware completo inmediatamente" << std::endl;
-        archivo << "   • Aislar el sistema de la red si es posible" << std::endl;
-        archivo << "   • Verificar logs del sistema y de red" << std::endl;
-        archivo << "   • Considerar restauración desde backup limpio" << std::endl;
+        archivo << "--- CRÍTICO - Puertos asociados con malware detectados:" << std::endl;
+        archivo << "   * Realizar análisis antimalware completo inmediatamente" << std::endl;
+        archivo << "   * Aislar el sistema de la red si es posible" << std::endl;
+        archivo << "   * Verificar logs del sistema y de red" << std::endl;
+        archivo << "   * Considerar restauración desde backup limpio" << std::endl;
         archivo << std::endl;
     }
     
     if (hayAdministrativos) {
-        archivo << "⚠ ALTO RIESGO - Servicios administrativos expuestos:" << std::endl;
-        archivo << "   • Restringir acceso mediante firewall" << std::endl;
-        archivo << "   • Implementar VPN para acceso remoto" << std::endl;
-        archivo << "   • Verificar credenciales fuertes" << std::endl;
-        archivo << "   • Activar logging y monitoreo" << std::endl;
+        archivo << "--- ALTO RIESGO - Servicios administrativos expuestos:" << std::endl;
+        archivo << "   * Restringir acceso mediante firewall" << std::endl;
+        archivo << "   * Implementar VPN para acceso remoto" << std::endl;
+        archivo << "   * Verificar credenciales fuertes" << std::endl;
+        archivo << "   * Activar logging y monitoreo" << std::endl;
         archivo << std::endl;
     }
     
     if (hayP2P) {
-        archivo << "📋 MEDIO RIESGO - Aplicaciones P2P detectadas:" << std::endl;
-        archivo << "   • Verificar si están autorizadas por política" << std::endl;
-        archivo << "   • Considerar bloqueo si violan políticas" << std::endl;
-        archivo << "   • Evaluar impacto en ancho de banda" << std::endl;
+        archivo << "--- MEDIO RIESGO - Aplicaciones P2P detectadas:" << std::endl;
+        archivo << "   * Verificar si están autorizadas por política" << std::endl;
+        archivo << "   * Considerar bloqueo si violan políticas" << std::endl;
+        archivo << "   * Evaluar impacto en ancho de banda" << std::endl;
         archivo << std::endl;
     }
     
     archivo << "RECOMENDACIONES GENERALES:" << std::endl;
-    archivo << "• Implementar principio de menor privilegio" << std::endl;
-    archivo << "• Configurar firewall para bloquear puertos no necesarios" << std::endl;
-    archivo << "• Establecer monitoreo continuo de puertos" << std::endl;
-    archivo << "• Realizar escaneos periódicos de vulnerabilidades" << std::endl;
-    archivo << "• Mantener documentación actualizada de servicios" << std::endl;
-    archivo << "• Implementar sistema de detección de intrusiones (IDS)" << std::endl;
+    archivo << "* Implementar principio de menor privilegio" << std::endl;
+    archivo << "* Configurar firewall para bloquear puertos no necesarios" << std::endl;
+    archivo << "* Establecer monitoreo continuo de puertos" << std::endl;
+    archivo << "* Realizar escaneos periódicos de vulnerabilidades" << std::endl;
+    archivo << "* Mantener documentación actualizada de servicios" << std::endl;
+    archivo << "* Implementar sistema de detección de intrusiones (IDS)" << std::endl;
     archivo << std::endl;
 }
 
@@ -266,7 +266,7 @@ bool Registro::guardarResultados(const std::string& nombreArchivo,
         
         // Pie del reporte
         archivo << SEPARADOR << std::endl;
-        archivo << "Reporte generado por Escáner de Puertos C++ v1.01" << std::endl;
+        archivo << "Reporte generado por Escáner de Puertos C++ v1.0" << std::endl;
         archivo << "Fecha de generación: " << obtenerFechaHora() << std::endl;
         archivo << SEPARADOR << std::endl;
         
