@@ -86,17 +86,44 @@ void Escaneo::limpiarWinsock() {
 #endif
 
 
+/**
+ * Valida si una cadena es una dirección IPv4 válida.
+ * Utiliza expresiones regulares para comprobar el formato.
+ * parametro: ip Dirección IP en formato string.
+ * return: true si la IP es válida, false en caso contrario.
+ */
 bool Escaneo::validarIP(const std::string& ip) {
-    // Esto es medio opcional pero estaría bien poner una regex para verificar
-    // que sea una IP válida
+    std::regex ipRegex(
+        R"(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)"
+    );
+    return std::regex_match(ip, ipRegex);
+}
+
+/**
+ * Determina si una IP pertenece a la red local.
+ * Incluye 127.0.0.1, localhost, redes privadas 192.168.x.x, 10.x.x.x y 172.16-31.x.x
+ * parametro: ip Dirección IP en formato string.
+ * return: true si es una IP local, false en caso contrario.
+ */
+bool Escaneo::esIPLocal(const std::string& ip) {
+    if (ip == "127.0.0.1" || ip == "localhost") return true;
+    if (ip.size() >= 8 && ip.substr(0, 8) == "192.168.") return true;
+    if (ip.size() >= 3 && ip.substr(0, 3) == "10.") return true;
+    if (ip.size() >= 7 && ip.substr(0, 7) == "172.") {
+        try {
+            size_t pos = ip.find('.', 4);
+            std::string segunda = ip.substr(4, pos - 4);
+            int val = std::stoi(segunda);
+            return val >= 16 && val <= 31;
+        } catch (...) {
+            return false;
+        }
+    }
     return false;
 }
 
-bool Escaneo::esIPLocal(const std::string& ip) {
-    // hay que ver si la ip es local. 192.168, 10. o 172.
-    // esto a lo mejor no es necesario
-    return false;
-}
+
+
 
 std::string Escaneo::obtenerServicio(int puerto) {
     // Ver si el puerto está en servicios comúnes, en pseudocódigo que sea algo así
