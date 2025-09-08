@@ -2,31 +2,25 @@
 
 ## Tabla de Contenidos
 
-### 1. [Descripción general](#descripción-general)
-
-### 2. [Integrantes del equipo](#integrantes-del-equipo)
-
-### 3. [Instrucciones de compilación y ejecución](#instrucciones-de-compilación-y-ejecución)
-  - 3.1 [Requisitos](#requisitos)
-  - 3.2 [Compilación](#compilación)
-  - 3.3 [Ejecución](#ejecución)
-    - 3.3.1 [Opciones disponibles](#opciones-disponibles)
-
-### 4. [Enfoque técnico del escaneo](#enfoque-técnico-del-escaneo)
-
-### 5. [Criterios para puertos sospechosos](#criterios-para-puertos-sospechosos)
-
-### 6. [Salida generada](#salida-generada)
-  - 6.1 [Salida en Consola](#salida-en-consola)
-  - 6.2 [Salida en Archivo (Reporte)](#salida-en-archivo-reporte)
-
-### 7. [Documentación de Módulos](#documentación-de-módulos-escáner-de-puertos-en-c)
-  - 7.1 [Módulo: Escaneo.cpp](#módulo-escaneocpp)
-    - 7.1.1 [Funciones principales](#funciones-principales)
-  - 7.2 [Módulo: Analisis.cpp](#módulo-analisiscpp)
-    - 7.2.1 [Funciones principales](#funciones-principales-1)
-   - 7.3 [Módulo: Registro.cpp](#módulo-registrocpp)
-     - 7.3.1 [Funciones principales](#funciones-principales-2)
+- [Descripción general](#descripción-general)
+- [Integrantes del equipo](#integrantes-del-equipo)
+- [Instrucciones de compilación y ejecución](#instrucciones-de-compilación-y-ejecución)
+  - [Requisitos](#requisitos)
+  - [Compilación](#compilación)
+  - [Ejecución](#ejecución)
+    - [Opciones disponibles](#opciones-disponibles)
+- [Enfoque técnico del escaneo](#enfoque-técnico-del-escaneo)
+- [Criterios para puertos sospechosos](#criterios-para-puertos-sospechosos)
+- [Salida generada](#salida-generada)
+  - [Salida en Consola](#salida-en-consola)
+  - [Salida en Archivo (Reporte)](#salida-en-archivo-reporte)
+- [Documentación de los módulos](#documentación-de-los-módulos)
+  - [Módulo: escaneo.cpp](#módulo-escaneocpp)
+    - [Funciones principales](#funciones-principales)
+  - [Módulo: analisis.cpp](#módulo-analisiscpp)
+    - [Funciones principales](#funciones-principales-1)
+   - [Módulo: registro.cpp](#módulo-registrocpp)
+     - [Funciones principales](#funciones-principales-2)
 
 ## Descripción general
 
@@ -178,7 +172,7 @@ Si se especifica la opción de salida (-o), el programa generará un archivo de 
 
 ------------------------------------------------------------------------
 
-# Documentación de Módulos - Escáner de Puertos en C++
+# Documentación de los módulos
 
 ## Módulo: `escaneo.cpp`
 
