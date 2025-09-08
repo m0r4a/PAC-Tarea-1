@@ -30,7 +30,6 @@ public:
 
     // No sé, trabajo sobre IPs?
     static bool validarIP(const std::string& ip);
-    static bool esIPLocal(const std::string& ip);
     static std::string obtenerServicio(int puerto);
 
     // Revisar un puerto individual (devuelve su estado y tiempo de resp.)

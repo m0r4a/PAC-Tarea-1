@@ -100,30 +100,6 @@ bool Escaneo::validarIP(const std::string& ip) {
 }
 
 /**
- * Determina si una IP pertenece a la red local.
- * Incluye 127.0.0.1, localhost, redes privadas 192.168.x.x, 10.x.x.x y 172.16-31.x.x
- * parametro: ip Dirección IP en formato string.
- * return: true si es una IP local, false en caso contrario.
- */
-bool Escaneo::esIPLocal(const std::string& ip) {
-    if (ip == "127.0.0.1" || ip == "localhost") return true;
-    if (ip.size() >= 8 && ip.substr(0, 8) == "192.168.") return true;
-    if (ip.size() >= 3 && ip.substr(0, 3) == "10.") return true;
-    if (ip.size() >= 7 && ip.substr(0, 7) == "172.") {
-        try {
-            size_t pos = ip.find('.', 4);
-            std::string segunda = ip.substr(4, pos - 4);
-            int val = std::stoi(segunda);
-            return val >= 16 && val <= 31;
-        } catch (...) {
-            return false;
-        }
-    }
-    return false;
-}
-
-
-/**
  * Obtiene el nombre del servicio asociado a un puerto.
  * Si el puerto no está en la lista común, se clasifica según su rango:
  * - <1024: Sistema/Privilegiado
