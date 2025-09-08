@@ -25,6 +25,8 @@
     - 7.1.1 [Funciones principales](#funciones-principales)
   - 7.2 [Módulo: Analisis.cpp](#módulo-analisiscpp)
     - 7.2.1 [Funciones principales](#funciones-principales-1)
+   - 7.3 [Módulo: Registro.cpp](#módulo-registrocpp)
+     - 7.3.1 [Funciones principales](#funciones-principales-2)
 
 ## Descripción general
 
@@ -178,7 +180,7 @@ Si se especifica la opción de salida (-o), el programa generará un archivo de 
 
 # Documentación de Módulos - Escáner de Puertos en C++
 
-## Módulo: Escaneo.cpp
+## Módulo: `escaneo.cpp`
 
 Este módulo contiene la lógica principal para realizar el escaneo de puertos.
 
@@ -197,9 +199,7 @@ Este módulo contiene la lógica principal para realizar el escaneo de puertos.
 - **obtenerServicio(puerto)**  
   Devuelve el nombre del servicio asociado a un puerto común (ej.: 80 → HTTP).
 
----
-
-## Módulo: Analisis.cpp
+## Módulo: `analisis.cpp`
 
 Este módulo analiza los resultados del escaneo para identificar **puertos sospechosos**.
 
@@ -221,3 +221,40 @@ Este módulo analiza los resultados del escaneo para identificar **puertos sospe
 
 - **detectarSecuenciasSospechosas(puertosAbiertos)**  
   Identifica **secuencias de puertos consecutivos abiertos**, lo que podría indicar un patrón de escaneo o comportamiento anómalo.
+
+## Módulo: `registro.cpp`
+Este módulo se encarga de generar reportes detallados de los resultados del escaneo en archivos de texto con formato profesional.
+
+### Funciones principales
+- **guardarResultados(nombreArchivo, ip, resultados, sospechosos)**  
+  Función principal que coordina la generación completa del reporte.  
+  - Valida el nombre del archivo antes de la escritura.  
+  - Orquesta la escritura de todas las secciones del reporte.  
+  - Implementa manejo robusto de errores.
+
+- **escribirEncabezado(archivo, ip)**  
+  Genera el encabezado del reporte con información básica.  
+  - Título del reporte con formato profesional.  
+  - IP objetivo del escaneo y fecha/hora de generación.
+
+- **escribirResultadosCompletos(archivo, resultados)**  
+  Crea una tabla formateada con todos los puertos abiertos encontrados.  
+  - Columnas: Puerto, Estado, Tiempo de respuesta, Servicio.  
+  - Filtra automáticamente solo los puertos abiertos.
+
+- **escribirPuertosSospechosos(archivo, sospechosos)**  
+  Genera el análisis detallado de puertos potencialmente peligrosos.  
+  - Lista cada puerto sospechoso con su justificación.  
+  - Incluye los criterios de evaluación utilizados.
+
+- **escribirEstadisticas(archivo, resultados)**  
+  Calcula y presenta estadísticas del escaneo.  
+  - Distribución porcentual de estados de puertos.  
+  - Tiempo promedio de respuesta y total de puertos escaneados.
+
+- **escribirRecomendaciones(archivo, sospechosos)**  
+  Genera recomendaciones de seguridad contextualizadas según el nivel de riesgo detectado.  
+  - **CRÍTICO**: Para puertos asociados con malware.  
+  - **ALTO RIESGO**: Para servicios administrativos expuestos.  
+  - **MEDIO RIESGO**: Para aplicaciones P2P no autorizadas.
+
