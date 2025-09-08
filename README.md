@@ -1,5 +1,31 @@
 # Escáner de Puertos en C++
 
+## Tabla de Contenidos
+
+### 1. [Descripción general](#descripción-general)
+
+### 2. [Integrantes del equipo](#integrantes-del-equipo)
+
+### 3. [Instrucciones de compilación y ejecución](#instrucciones-de-compilación-y-ejecución)
+  - 3.1 [Requisitos](#requisitos)
+  - 3.2 [Compilación](#compilación)
+  - 3.3 [Ejecución](#ejecución)
+    - 3.3.1 [Opciones disponibles](#opciones-disponibles)
+
+### 4. [Enfoque técnico del escaneo](#enfoque-técnico-del-escaneo)
+
+### 5. [Criterios para puertos sospechosos](#criterios-para-puertos-sospechosos)
+
+### 6. [Salida generada](#salida-generada)
+  - 6.1 [Salida en Consola](#salida-en-consola)
+  - 6.2 [Salida en Archivo (Reporte)](#salida-en-archivo-reporte)
+
+### 7. [Documentación de Módulos](#documentación-de-módulos-escáner-de-puertos-en-c)
+  - 7.1 [Módulo: Escaneo.cpp](#módulo-escaneocpp)
+    - 7.1.1 [Funciones principales](#funciones-principales)
+  - 7.2 [Módulo: Analisis.cpp](#módulo-analisiscpp)
+    - 7.2.1 [Funciones principales](#funciones-principales-1)
+
 ## Descripción general
 
 Este proyecto es un escáner de puertos en C++ que realiza un escaneo
